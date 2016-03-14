@@ -1,33 +1,87 @@
 <?xml version="1.0"?>
 <project name="Java Boxing Profiler" default="compile">
-  <property name="src" location="src"/>
-  <property name="build" location="classes"/>
+
+  <property name="lib.dir" location="lib"/>
+  <property name="src.dir" location="src/main"/>
+  <property name="build.classes.dir" location="classes"/>
+
+  <property name="test.src.dir" location="src/test"/>
+  <property name="test.classes.dir" location="test-classes"/>
+  <property name="test.reports.dir" location="test-output"/>
+
 
   <path id="classpath">
-    <fileset dir="lib" includes="**/*.jar"/>
+    <pathelement location="${lib.dir}/javassist.jar" />
+    <pathelement location="${build.classes.dir}" />
   </path>
 
-  <target name="init">
-    <mkdir dir="${build}"/>
+  <path id="test.compile.classpath">
+    <path refid="classpath" />
+    <pathelement location="${lib.dir}/testng.jar" />
+  </path>
+
+  <path id="test.classpath">
+    <path refid="test.compile.classpath" />
+    <pathelement location="${lib.dir}/jcommander.jar" />
+    <pathelement location="${test.classes.dir}" />
+  </path>
+
+
+  <!-- =================================================================== -->
+  <!-- Additional taks                                                     -->
+  <!-- =================================================================== -->
+  <taskdef name="testng"
+           classpathref="test.classpath"
+           classname="org.testng.TestNGAntTask" />
+
+  <!-- =================================================================== -->
+  <!-- Compilation                                                         -->
+  <!-- =================================================================== -->
+  <target name="compile" depends="init">
+    <javac srcdir="${src.dir}"
+           destdir="${build.classes.dir}"
+           includeantruntime="false">
+      <classpath refid="classpath" />
+    </javac>
   </target>
 
-  <target name="compile" depends="init">
-    <javac srcdir="${src}"
-           destdir="${build}"
-           classpathref="classpath"
-           includeantruntime="false"/>
+  <target name="test-compile" depends="compile">
+    <javac srcdir="${test.src.dir}"
+           destdir="${test.classes.dir}"
+           includeantruntime="false">
+      <classpath refid="test.compile.classpath" />
+    </javac>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Running tests                                                       -->
+  <!-- =================================================================== -->
+  <target name="test" depends="test-compile">
+    <testng classpathref="test.classpath" outputDir="${test.reports.dir}">
+      <classfileset dir="${test.classes.dir}" includes="**/*.class"/>
+    </testng>
   </target>
 
   <target name="run" depends="compile">
     <java classname="ist.meic.ap.BoxingProfiler">
       <classpath>
         <path refid="classpath"/>
-        <pathelement location="${build}"/>
       </classpath>
     </java>
   </target>
 
+  <!-- =================================================================== -->
+  <!-- Build preparation and cleaning                                      -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <mkdir dir="${build.classes.dir}"/>
+    <mkdir dir="${test.classes.dir}"/>
+    <mkdir dir="${test.reports.dir}"/>
+  </target>
+
   <target name="clean">
-    <delete dir="${build}"/>
+    <delete dir="${test.reports.dir}"/>
+    <delete dir="${test.classes.dir}"/>
+    <delete dir="${build.classes.dir}"/>
   </target>
 </project>
