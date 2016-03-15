@@ -1,13 +1,20 @@
 <?xml version="1.0"?>
-<project name="Java Boxing Profiler" default="compile">
+<project name="Java Boxing Profiler" default="jar">
 
-  <property name="lib.dir" location="lib"/>
-  <property name="src.dir" location="src/main"/>
-  <property name="build.classes.dir" location="classes"/>
+  <property name="lib.dir" location="lib" />
+  <property name="src.dir" location="src/main" />
+  <property name="build.classes.dir" location="classes" />
 
-  <property name="test.src.dir" location="src/test"/>
-  <property name="test.classes.dir" location="test-classes"/>
-  <property name="test.reports.dir" location="test-output"/>
+  <property name="test.src.dir" location="src/test" />
+  <property name="test.classes.dir" location="test-classes" />
+  <property name="test.reports.dir" location="test-output" />
+
+  <property name="main.class" value="ist.meic.ap.BoxingProfiler" />
+
+  <property name="release.zip" value="project.zip" />
+  <property name="zip.prefix.dir" value="g05" />
+  <property name="own.jar" location="boxingProfiler.jar" />
+  <property name="slides.pdf" location="p1.pdf" />
 
 
   <path id="classpath">
@@ -28,7 +35,7 @@
 
 
   <!-- =================================================================== -->
-  <!-- Additional taks                                                     -->
+  <!-- Additional tasks                                                     -->
   <!-- =================================================================== -->
   <taskdef name="testng"
            classpathref="test.classpath"
@@ -45,6 +52,34 @@
     </javac>
   </target>
 
+  <target name="jar" depends="compile">
+    <jar destfile="${own.jar}" basedir="${build.classes.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="${main.class}" />
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="dist" depends="jar" />
+
+  <!-- =================================================================== -->
+  <!-- Release                                                             -->
+  <!-- =================================================================== -->
+  <target name="release" depends="jar">
+    <zip destfile="${release.zip}">
+      <zipfileset dir="." includes="lib/**/*" prefix="${zip.prefix.dir}" />
+      <zipfileset dir="." includes="src/**/*" prefix="${zip.prefix.dir}" />
+      <zipfileset dir="." includes="build.xml" prefix="${zip.prefix.dir}" />
+      <zipfileset dir="." includes="${own.jar}" prefix="${zip.prefix.dir}" />
+      <zipfileset dir="." includes="${slides.pdf}" prefix="${zip.prefix.dir}" />
+    </zip>
+  </target>
+
+  <target name="deploy" depends="release" />
+
+  <!-- =================================================================== -->
+  <!-- Tests: Compile and run                                              -->
+  <!-- =================================================================== -->
   <target name="test-compile" depends="compile">
     <javac srcdir="${test.src.dir}"
            destdir="${test.classes.dir}"
@@ -53,19 +88,16 @@
     </javac>
   </target>
 
-  <!-- =================================================================== -->
-  <!-- Running tests                                                       -->
-  <!-- =================================================================== -->
   <target name="test" depends="test-compile">
     <testng classpathref="test.classpath" outputDir="${test.reports.dir}">
-      <classfileset dir="${test.classes.dir}" includes="**/*.class"/>
+      <classfileset dir="${test.classes.dir}" includes="**/*.class" />
     </testng>
   </target>
 
   <target name="run" depends="compile">
-    <java classname="ist.meic.ap.BoxingProfiler">
+    <java classname="${main.class}">
       <classpath>
-        <path refid="classpath"/>
+        <path refid="classpath" />
       </classpath>
     </java>
   </target>
@@ -74,14 +106,17 @@
   <!-- Build preparation and cleaning                                      -->
   <!-- =================================================================== -->
   <target name="init">
-    <mkdir dir="${build.classes.dir}"/>
-    <mkdir dir="${test.classes.dir}"/>
-    <mkdir dir="${test.reports.dir}"/>
+    <mkdir dir="${build.classes.dir}" />
+    <mkdir dir="${test.classes.dir}" />
+    <mkdir dir="${test.reports.dir}" />
   </target>
 
   <target name="clean">
-    <delete dir="${test.reports.dir}"/>
-    <delete dir="${test.classes.dir}"/>
-    <delete dir="${build.classes.dir}"/>
+    <delete file="${release.zip}" />
+    <delete file="${own.jar}" />
+    <delete file="${own.jar}" />
+    <delete dir="${test.reports.dir}" />
+    <delete dir="${test.classes.dir}" />
+    <delete dir="${build.classes.dir}" />
   </target>
 </project>
