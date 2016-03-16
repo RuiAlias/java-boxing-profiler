@@ -94,12 +94,16 @@
     </testng>
   </target>
 
-  <target name="run" depends="compile">
-    <java classname="${main.class}">
-      <classpath>
-        <path refid="classpath" />
-      </classpath>
+  <target name="run" depends="compile, run-args, run-noargs" />
+
+  <target name="run-args" if="args">
+    <java classname="${main.class}" classpathref="classpath">
+      <arg value="${args}" />
     </java>
+  </target>
+
+  <target name="run-noargs" unless="args">
+    <java classname="${main.class}" classpathref="classpath" />
   </target>
 
   <!-- =================================================================== -->
