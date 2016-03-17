@@ -4,8 +4,7 @@ import javassist.*;
 
 public class BoxingProfilerTranslator implements Translator {
   public void start(ClassPool pool)
-      throws NotFoundException, CannotCompileException {
-  }
+      throws NotFoundException, CannotCompileException {}
 
   public void onLoad(ClassPool pool, String className)
       throws NotFoundException, CannotCompileException {
@@ -14,6 +13,5 @@ public class BoxingProfilerTranslator implements Translator {
   }
 
   void makeBoxingProfiler(CtClass ctClass)
-      throws NotFoundException, CannotCompileException {
-  }
+      throws NotFoundException, CannotCompileException {}
 }
