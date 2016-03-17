@@ -9,10 +9,9 @@ public class BoxingProfiler {
     if (args.length < 1) {
       System.out.println("Error: Argument missing");
     } else {
-      HelpTranslator translator = new HelpTranslator();
+      Translator translator = new BoxingProfilerTranslator();
       ClassPool pool = ClassPool.getDefault();
       Loader classLoader = new Loader();
-      // classLoader.doDelegation = false;
       classLoader.addTranslator(pool, translator);
 
       String[] restArgs = new String[args.length - 1];
