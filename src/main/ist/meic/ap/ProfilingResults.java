@@ -18,7 +18,7 @@ public class ProfilingResults {
   public static void printSortedResults() {
     for (Map.Entry<String, Integer> entry : sortedResults.entrySet()) {
       String[] words = entry.getKey().split(" ");
-      System.out.println(words[0] + " " + words[2] + " " + entry.getValue() + " " + words[1]);
+      System.err.println(words[0] + " " + words[2] + " " + entry.getValue() + " " + words[1]);
     }
   }
 }
