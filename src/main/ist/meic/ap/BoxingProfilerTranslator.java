@@ -87,7 +87,7 @@ public class BoxingProfilerTranslator implements Translator {
 
           try {
             CtMethod calledMethod = expr.getMethod();
-
+            
             String key = ctMethod.getLongName() + " "
               // + calledMethod.getDeclaringClass().getName();
               + expr.getClassName();
@@ -97,10 +97,11 @@ public class BoxingProfilerTranslator implements Translator {
               "  ist.meic.ap.ProfilingResults.add(\"" + key + " %s\");" +
               "  $_ = $proceed($$);" +
               "}";
-
+            
             if (unboxingMethods.contains(calledMethod)) {
               try {
-                expr.replace(String.format(template, "unboxed"));
+            	  addTiming(calledMethod);
+            	  expr.replace(String.format(template, "unboxed"));
               } catch (CannotCompileException e) {
                 e.printStackTrace();
               }
@@ -108,14 +109,38 @@ public class BoxingProfilerTranslator implements Translator {
 
             if (autoboxingMethods.contains(calledMethod)) {
               try {
-                expr.replace(String.format(template, "boxed"));
+            	  addTiming(calledMethod);
+            	  expr.replace(String.format(template, "boxed"));
               } catch (CannotCompileException e) {
                 e.printStackTrace();
               }
             }
           } catch (javassist.NotFoundException e) {
+        	  e.printStackTrace();
           }
         }
+
+		private void addTiming(CtMethod calledMethod) {
+			final String starttiming =
+            		"{" +
+            		"  long t = System.currentTimeMillis();"+
+            	    "  ist.meic.ap.ProfilingResults.addStartTime(t);" +
+            	    "}";
+			
+			final String endtiming =
+            		"{" +
+            		"  long t = System.currentTimeMillis();"+
+            	    "  ist.meic.ap.ProfilingResults.addEndTime(t);" +
+            	    "}";
+            
+            try {
+				calledMethod.insertBefore(starttiming);
+				calledMethod.insertAfter(endtiming);
+			} catch (CannotCompileException e1) {
+				e1.printStackTrace();
+			}
+			
+		}
       });
     }
   }
