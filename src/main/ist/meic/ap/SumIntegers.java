@@ -17,7 +17,5 @@ public class SumIntegers {
         printSum(sumOfIntegerUptoN(100000000));
         long end = System.currentTimeMillis();
         System.out.println("Time: " + (end - start));
-
-        ist.meic.ap.ProfilingResults.printSortedResults();
     }
 }
