@@ -94,13 +94,16 @@ public class BoxingProfilerTranslator implements Translator {
 
             final String template =
               "{" +
+              "  long start = System.currentTimeMillis();"+
               "  ist.meic.ap.ProfilingResults.add(\"" + key + " %s\");" +
               "  $_ = $proceed($$);" +
+              "  long end = System.currentTimeMillis();"+
+      	      "  ist.meic.ap.ProfilingResults.addTime(end-start);" +
               "}";
             
             if (unboxingMethods.contains(calledMethod)) {
               try {
-            	  addTiming(calledMethod);
+            	  
             	  expr.replace(String.format(template, "unboxed"));
               } catch (CannotCompileException e) {
                 e.printStackTrace();
@@ -109,7 +112,7 @@ public class BoxingProfilerTranslator implements Translator {
 
             if (autoboxingMethods.contains(calledMethod)) {
               try {
-            	  addTiming(calledMethod);
+            	  
             	  expr.replace(String.format(template, "boxed"));
               } catch (CannotCompileException e) {
                 e.printStackTrace();
@@ -119,28 +122,6 @@ public class BoxingProfilerTranslator implements Translator {
         	  e.printStackTrace();
           }
         }
-
-		private void addTiming(CtMethod calledMethod) {
-			final String starttiming =
-            		"{" +
-            		"  long t = System.currentTimeMillis();"+
-            	    "  ist.meic.ap.ProfilingResults.addStartTime(t);" +
-            	    "}";
-			
-			final String endtiming =
-            		"{" +
-            		"  long t = System.currentTimeMillis();"+
-            	    "  ist.meic.ap.ProfilingResults.addEndTime(t);" +
-            	    "}";
-            
-            try {
-				calledMethod.insertBefore(starttiming);
-				calledMethod.insertAfter(endtiming);
-			} catch (CannotCompileException e1) {
-				e1.printStackTrace();
-			}
-			
-		}
       });
     }
   }
