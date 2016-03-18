@@ -1,7 +1,10 @@
 package ist.meic.ap;
 
-import javassist.*;
-import java.util.Arrays;
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.Loader;
+import javassist.NotFoundException;
+import javassist.Translator;
 
 public class BoxingProfiler {
   public static void main(String[] args)

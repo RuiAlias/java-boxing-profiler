@@ -14,7 +14,7 @@ public class SumIntegers {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        printSum(sumOfIntegerUptoN(10));
+        printSum(sumOfIntegerUptoN(100000));
         long end = System.currentTimeMillis();
         System.out.println("Time: " + (end - start));
     }

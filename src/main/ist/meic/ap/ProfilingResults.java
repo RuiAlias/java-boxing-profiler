@@ -1,9 +1,7 @@
 package ist.meic.ap;
 
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.Map;
 
 public class ProfilingResults {
@@ -11,7 +9,6 @@ public class ProfilingResults {
   static long totalTime = 0;
   
   public static void addTime(long t){
-	  //System.out.println("Added -> "+t);
 	  totalTime += t;
   }
   

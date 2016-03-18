@@ -2,7 +2,12 @@ package ist.meic.ap;
 
 import java.util.ArrayList;
 
-import javassist.*;
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.NotFoundException;
+import javassist.Translator;
 import javassist.expr.*;
 
 public class BoxingProfilerTranslator implements Translator {
@@ -59,13 +64,6 @@ public class BoxingProfilerTranslator implements Translator {
     ValueOfCm = compileClass.getMethod("valueOf", "(C)Ljava/lang/Character;");
     unboxingMethods.add(ValueCm);
     autoboxingMethods.add(ValueOfCm);
-     
-//  CtMethod[] m = compileClass.getMethods();
-//
-//     for (CtMethod ctm : m) {
-//     if (ctm.getName().equals("valueOf") || ctm.getName().equals("charValue"))
-//     System.out.println(ctm.getName()+" && "+ctm.getSignature());
-//     }
     
   }
 
@@ -82,16 +80,12 @@ public class BoxingProfilerTranslator implements Translator {
     for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
       ctMethod.instrument(new ExprEditor() {
         public void edit(MethodCall expr) {
-          // System.out.println("MethodCall " + expr.getClassName() + " "
-          //     + expr.getMethodName() + " " + expr.getSignature());
-
           try {
             CtMethod calledMethod = expr.getMethod();
             
             String key = ctMethod.getLongName() + " "
-              // + calledMethod.getDeclaringClass().getName();
-              + expr.getClassName();
-
+               + calledMethod.getDeclaringClass().getName();
+            
             final String template =
               "{" +
               "  long start = System.currentTimeMillis();"+
