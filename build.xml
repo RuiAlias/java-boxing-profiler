@@ -1,25 +1,40 @@
 <?xml version="1.0"?>
-<project name="Java Boxing Profiler" default="jar">
+<project name="Java Boxing Profiler" default="root-jar">
 
   <property name="lib.dir" location="lib" />
-  <property name="src.dir" location="src/main" />
-  <property name="build.classes.dir" location="classes" />
+  <property name="src.dir" location="src" />
+  <property name="build.dir" location="build" />
+  <property name="dist.dir" location="dist" />
 
-  <property name="test.src.dir" location="src/test" />
-  <property name="test.classes.dir" location="test-classes" />
-  <property name="test.reports.dir" location="test-output" />
+  <property name="main" value="main" />
+  <property name="samples" value="etc" />
+  <property name="test" value="test" />
+
+  <property name="main.src.dir" location="${src.dir}/${main}" />
+  <property name="samples.src.dir" location="${samples}" />
+  <property name="test.src.dir" location="${src.dir}/${test}" />
+
+  <property name="main.classes.dir" location="${build.dir}/${main}" />
+  <property name="samples.classes.dir" location="${build.dir}/${samples}" />
+  <property name="test.classes.dir" location="${build.dir}/${test}" />
 
   <property name="main.class" value="ist.meic.ap.BoxingProfiler" />
+  <property name="jar.name" value="boxingProfiler.jar" />
+  <property name="dist.own.jar" location="${dist.dir}/${jar.name}" />
 
   <property name="release.zip" value="project.zip" />
   <property name="zip.prefix.dir" value="g05" />
-  <property name="own.jar" location="boxingProfiler.jar" />
   <property name="slides.pdf" location="p1.pdf" />
+
+  <property name="runnable.samples.jar"
+            location="${dist.dir}/runnable-samples.jar" />
+
+  <property name="test.reports.dir" location="test-output" />
 
 
   <path id="classpath">
     <pathelement location="${lib.dir}/javassist.jar" />
-    <pathelement location="${build.classes.dir}" />
+    <pathelement location="${main.classes.dir}" />
   </path>
 
   <path id="test.compile.classpath">
@@ -41,47 +56,85 @@
            classpathref="test.classpath"
            classname="org.testng.TestNGAntTask" />
 
+
   <!-- =================================================================== -->
   <!-- Compilation                                                         -->
   <!-- =================================================================== -->
-  <target name="compile" depends="init">
-    <javac srcdir="${src.dir}"
-           destdir="${build.classes.dir}"
+  <target name="compile" depends="compile-main" />
+
+  <target name="compile-main" depends="init-main">
+    <javac srcdir="${main.src.dir}"
+           destdir="${main.classes.dir}"
            includeantruntime="false">
       <classpath refid="classpath" />
     </javac>
   </target>
 
-  <target name="jar" depends="compile">
-    <jar destfile="${own.jar}" basedir="${build.classes.dir}">
-    	<zipgroupfileset dir="lib" includes="javassist.jar" />
+  <target name="jar" depends="init-jar, compile-main">
+    <jar destfile="${dist.own.jar}" basedir="${main.classes.dir}">
+    	<zipfileset src="${lib.dir}/javassist.jar" />
       <manifest>
         <attribute name="Main-Class" value="${main.class}" />
       </manifest>
     </jar>
   </target>
 
-  <target name="dist" depends="jar" />
 
   <!-- =================================================================== -->
   <!-- Release                                                             -->
   <!-- =================================================================== -->
-  <target name="release" depends="jar">
+  <target name="root-jar" depends="jar">
+    <copy file="${dist.own.jar}" todir="." />
+  </target>
+
+  <target name="release">
     <zip destfile="${release.zip}">
       <zipfileset dir="." includes="lib/**/*" prefix="${zip.prefix.dir}" />
       <zipfileset dir="." includes="src/**/*" prefix="${zip.prefix.dir}" />
+      <zipfileset dir="."
+                  includes="${samples}/**/*"
+                  prefix="${zip.prefix.dir}" />
       <zipfileset dir="." includes="build.xml" prefix="${zip.prefix.dir}" />
-      <zipfileset dir="." includes="${own.jar}" prefix="${zip.prefix.dir}" />
       <zipfileset dir="." includes="${slides.pdf}" prefix="${zip.prefix.dir}" />
     </zip>
   </target>
 
-  <target name="deploy" depends="release" />
+  <target name="zip" depends="release" />
+
+  <!-- =================================================================== -->
+  <!-- Samples (compiling and running)                                     -->
+  <!-- =================================================================== -->
+  <target name="compile-samples" depends="init-samples">
+    <javac srcdir="${samples.src.dir}"
+           destdir="${samples.classes.dir}"
+           includeantruntime="false">
+    </javac>
+  </target>
+
+  <target name="jar-runnable-samples" depends="jar, compile-samples">
+    <jar destfile="${runnable.samples.jar}" filesetmanifest="merge">
+      <zipfileset src="${dist.own.jar}" />
+      <fileset dir="${samples.classes.dir}" />
+    </jar>
+  </target>
+
+  <target name="run" depends="jar-runnable-samples, run-args, run-noargs" />
+
+  <target name="run-args" if="args">
+    <java jar="${runnable.samples.jar}" fork="true">
+      <arg value="${args}" />
+    </java>
+  </target>
+
+  <target name="run-noargs" unless="args">
+    <java jar="${runnable.samples.jar}" fork="true" />
+  </target>
+
 
   <!-- =================================================================== -->
   <!-- Tests: Compile and run                                              -->
   <!-- =================================================================== -->
-  <target name="test-compile" depends="compile">
+  <target name="test-compile" depends="init-tests, compile">
     <javac srcdir="${test.src.dir}"
            destdir="${test.classes.dir}"
            includeantruntime="false">
@@ -95,33 +148,60 @@
     </testng>
   </target>
 
-  <target name="run" depends="compile, run-args, run-noargs" />
-
-  <target name="run-args" if="args">
-    <java classname="${main.class}" classpathref="classpath">
-      <arg value="${args}" />
-    </java>
-  </target>
-
-  <target name="run-noargs" unless="args">
-    <java classname="${main.class}" classpathref="classpath" />
-  </target>
 
   <!-- =================================================================== -->
   <!-- Build preparation and cleaning                                      -->
   <!-- =================================================================== -->
-  <target name="init">
-    <mkdir dir="${build.classes.dir}" />
+  <target name="clean"
+          depends="clean-main,clean-tests,clean-samples,clean-release,clean-jar" >
+    <delete dir="${build.dir}" />
+    <delete dir="${dist.dir}" />
+  </target>
+
+
+  <target name="init-main">
+    <mkdir dir="${main.classes.dir}" />
+  </target>
+
+  <target name="clean-main">
+    <delete dir="${main.classes.dir}" />
+  </target>
+
+
+  <target name="init-jar">
+    <mkdir dir="${dist.dir}" />
+  </target>
+
+  <target name="clean-jar">
+    <delete file="${dist.own.jar}" />
+  </target>
+
+
+  <target name="init-release" />
+
+  <target name="clean-release">
+    <delete file="${jar.name}" />
+    <delete file="${release.zip}" />
+  </target>
+
+
+  <target name="init-samples">
+    <mkdir dir="${samples.classes.dir}" />
+  </target>
+
+  <target name="clean-samples">
+    <delete file="${runnable.samples.jar}" />
+    <delete dir="${samples.classes.dir}" />
+  </target>
+
+
+  <target name="init-tests">
     <mkdir dir="${test.classes.dir}" />
     <mkdir dir="${test.reports.dir}" />
   </target>
 
-  <target name="clean">
-    <delete file="${release.zip}" />
-    <delete file="${own.jar}" />
-    <delete file="${own.jar}" />
+  <target name="clean-tests">
     <delete dir="${test.reports.dir}" />
     <delete dir="${test.classes.dir}" />
-    <delete dir="${build.classes.dir}" />
   </target>
 </project>
