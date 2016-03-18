@@ -8,16 +8,14 @@ import java.util.Map;
 
 public class ProfilingResults {
   static SortedMap<String, Integer> sortedResults = new TreeMap<String, Integer>();
-  //static long totalTime = 0;
+  static long totalTime = 0;
   
-  /*
   public static void addTime(long t){
 	  //System.out.println("Added -> "+t);
 	  totalTime += t;
   }
   
   public static long getTotalTime(){return totalTime;}
-  */
   
   public static void add(String key) {
     if (!sortedResults.containsKey(key)) {
