@@ -98,7 +98,7 @@ public class BoxingProfilerTranslator implements Translator {
               "  ist.meic.ap.ProfilingResults.add(\"" + key + " %s\");" +
               "  $_ = $proceed($$);" +
               "  long end = System.currentTimeMillis();"+
-      	      "  ist.meic.ap.ProfilingResults.addTime(end-start);" +
+      	      "  ist.meic.ap.BoxingProfilerExtended.addTime(end-start);" +
               "}";
             
             if (unboxingMethods.contains(calledMethod)) {
