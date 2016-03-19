@@ -20,7 +20,9 @@
 
   <property name="main.class" value="ist.meic.ap.BoxingProfiler" />
   <property name="jar.name" value="boxingProfiler.jar" />
+  <property name="jar.name.extended" value="boxingProfilerExtended.jar" />
   <property name="dist.own.jar" location="${dist.dir}/${jar.name}" />
+  <property name="dist.own.jar.extended" location="${dist.dir}/${jar.name.extended}" />
 
   <property name="release.zip" value="project.zip" />
   <property name="zip.prefix.dir" value="g05" />
@@ -78,6 +80,16 @@
       </manifest>
     </jar>
   </target>
+	
+	<target name="jar-extended" depends="init-jar, compile-main">
+	    <jar destfile="${dist.own.jar.extended}" basedir="${main.classes.dir}">
+	    	<zipfileset src="${lib.dir}/javassist.jar" />
+	      <manifest>
+	        <attribute name="Main-Class" value="ist.meic.ap.BoxingProfilerExtended" />
+	      </manifest>
+	    </jar>
+		<copy file="${dist.own.jar.extended}" todir="." />
+	  </target>
 
 
   <!-- =================================================================== -->
@@ -181,6 +193,7 @@
 
   <target name="clean-release">
     <delete file="${jar.name}" />
+  	<delete file="${jar.name.extended}" />
     <delete file="${release.zip}" />
   </target>
 

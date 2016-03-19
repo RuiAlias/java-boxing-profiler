@@ -6,13 +6,13 @@ import javassist.Loader;
 import javassist.NotFoundException;
 import javassist.Translator;
 
-public class BoxingProfiler {
+public class BoxingProfilerExtended {
   public static void main(String[] args)
       throws NotFoundException, CannotCompileException, Throwable {
     if (args.length < 1) {
       System.out.println("Error: Argument missing");
     } else {
-      Translator translator = new BoxingProfilerTranslator();
+      Translator translator = new BoxingProfilerTranslatorExtended();
       ClassPool pool = ClassPool.getDefault();
       Loader classLoader = new Loader();
       classLoader.delegateLoadingOf("ist.meic.ap.");
@@ -23,7 +23,7 @@ public class BoxingProfiler {
       classLoader.run(args[0], restArgs);
 
       ProfilingResults.printSortedResults();
-      //System.out.println("Time Spent (Un)Boxing -> "+ProfilingResultsExtended.getTotalTime());
+      System.out.println("Time Spent (Un)Boxing -> " + ProfilingResultsExtended.getTotalTime());
     }
   }
 }

@@ -13,7 +13,17 @@ import javassist.expr.*;
 public class BoxingProfilerTranslator implements Translator {
   private ArrayList<CtMethod> autoboxingMethods = new ArrayList<CtMethod>();
   private ArrayList<CtMethod> unboxingMethods = new ArrayList<CtMethod>();
-
+  
+  protected String firstHalfTemplate =  "{" +
+          //"  long start = System.currentTimeMillis();"+
+          "  ist.meic.ap.ProfilingResults.add(\"";
+  
+  protected String secondHalfTemplate = " %s\");" +
+          "  $_ = $proceed($$);" +
+          //"  long end = System.currentTimeMillis();"+
+  	      //"  ist.meic.ap.ProfilingResults.addTime(end-start);" +
+          "}";
+  
   public void start(ClassPool pool)
       throws NotFoundException, CannotCompileException {
 	  
@@ -69,7 +79,8 @@ public class BoxingProfilerTranslator implements Translator {
 
   public void onLoad(ClassPool pool, String className)
       throws NotFoundException, CannotCompileException {
-    if (className.equals("ist.meic.ap.ProfilingResults")) return;
+    if (className.equals("ist.meic.ap.ProfilingResults") ||
+    	className.equals("ist.meic.ap.ProfilingResultsExtended")) return;
 
     CtClass ctClass = pool.get(className);
 
@@ -86,14 +97,7 @@ public class BoxingProfilerTranslator implements Translator {
             String key = ctMethod.getLongName() + " "
                + calledMethod.getDeclaringClass().getName();
             
-            final String template =
-              "{" +
-              "  long start = System.currentTimeMillis();"+
-              "  ist.meic.ap.ProfilingResults.add(\"" + key + " %s\");" +
-              "  $_ = $proceed($$);" +
-              "  long end = System.currentTimeMillis();"+
-      	      "  ist.meic.ap.ProfilingResults.addTime(end-start);" +
-              "}";
+            final String template = firstHalfTemplate + key + secondHalfTemplate;
             
             if (unboxingMethods.contains(calledMethod)) {
               try {
