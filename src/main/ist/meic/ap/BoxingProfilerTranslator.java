@@ -79,8 +79,8 @@ public class BoxingProfilerTranslator implements Translator {
 
   public void onLoad(ClassPool pool, String className)
       throws NotFoundException, CannotCompileException {
-    if (className.equals("ist.meic.ap.ProfilingResults") ||
-    	className.equals("ist.meic.ap.ProfilingResultsExtended")) return;
+    //if (className.equals("ist.meic.ap.ProfilingResults") ||
+    	//className.equals("ist.meic.ap.ProfilingResultsExtended")) return;
 
     CtClass ctClass = pool.get(className);
 
