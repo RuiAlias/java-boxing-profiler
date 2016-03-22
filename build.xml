@@ -82,14 +82,14 @@
   </target>
 	
 	<target name="jar-extended" depends="init-jar, compile-main">
-	    <jar destfile="${dist.own.jar.extended}" basedir="${main.classes.dir}">
-	    	<zipfileset src="${lib.dir}/javassist.jar" />
-	      <manifest>
-	        <attribute name="Main-Class" value="ist.meic.ap.BoxingProfilerExtended" />
-	      </manifest>
-	    </jar>
+	  <jar destfile="${dist.own.jar.extended}" basedir="${main.classes.dir}">
+	    <zipfileset src="${lib.dir}/javassist.jar" />
+	    <manifest>
+	      <attribute name="Main-Class" value="ist.meic.ap.BoxingProfilerExtended" />
+	    </manifest>
+	  </jar>
 		<copy file="${dist.own.jar.extended}" todir="." />
-	  </target>
+	</target>
 
 
   <!-- =================================================================== -->
