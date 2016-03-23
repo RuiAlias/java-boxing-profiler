@@ -30,8 +30,10 @@
   <property name="zip.prefix.dir" value="g05" />
   <property name="slides.pdf" location="p1.pdf" />
 
-  <property name="runnable.samples.jar"
-            location="${dist.dir}/runnable-samples.jar" />
+  <property name="default.samples.jar"
+            location="${dist.dir}/default-samples.jar" />
+  <property name="extended.samples.jar"
+            location="${dist.dir}/extended-samples.jar" />
 
   <property name="test.reports.dir" location="test-output" />
 
@@ -92,15 +94,15 @@
 	      <attribute name="Main-Class" value="${extended.class}" />
 	    </manifest>
 	  </jar>
-		<copy file="${dist.extended.jar}" todir="." />
 	</target>
 
 
   <!-- =================================================================== -->
   <!-- Release                                                             -->
   <!-- =================================================================== -->
-  <target name="root-jar" depends="jar-default">
+  <target name="root-jar" depends="jar-default, jar-extended">
     <copy file="${dist.default.jar}" todir="." />
+    <copy file="${dist.extended.jar}" todir="." />
   </target>
 
   <target name="release">
@@ -127,25 +129,47 @@
     </javac>
   </target>
 
-  <target name="jar-runnable-samples" depends="jar, compile-samples">
-    <jar destfile="${runnable.samples.jar}" filesetmanifest="merge">
+  <target name="jar-default-samples" depends="jar-default, compile-samples">
+    <jar destfile="${default.samples.jar}" filesetmanifest="merge">
       <zipfileset src="${dist.default.jar}" />
       <fileset dir="${samples.classes.dir}" />
     </jar>
   </target>
 
-  <target name="run" depends="jar-runnable-samples, run-args, run-noargs" />
+  <target name="jar-extended-samples" depends="jar-extended, compile-samples">
+    <jar destfile="${extended.samples.jar}" filesetmanifest="merge">
+      <zipfileset src="${dist.extended.jar}" />
+      <fileset dir="${samples.classes.dir}" />
+    </jar>
+  </target>
 
-  <target name="run-args" if="args">
-    <java jar="${runnable.samples.jar}" fork="true">
+  <target name="run" depends="run-default" />
+
+  <target name="run-default"
+          depends="jar-default-samples, run-default-args, run-default-noargs" />
+
+  <target name="run-default-args" if="args">
+    <java jar="${default.samples.jar}" fork="true">
       <arg value="${args}" />
     </java>
   </target>
 
-  <target name="run-noargs" unless="args">
-    <java jar="${runnable.samples.jar}" fork="true" />
+  <target name="run-default-noargs" unless="args">
+    <java jar="${default.samples.jar}" fork="true" />
+  </target>
+  
+  <target name="run-extended"
+          depends="jar-extended-samples, run-extended-args, run-extended-noargs" />
+  
+  <target name="run-extended-args" if="args">
+    <java jar="${extended.samples.jar}" fork="true">
+      <arg value="${args}" />
+    </java>
   </target>
 
+  <target name="run-extended-noargs" unless="args">
+    <java jar="${extended.samples.jar}" fork="true" />
+  </target>
 
   <!-- =================================================================== -->
   <!-- Tests: Compile and run                                              -->
