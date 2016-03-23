@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.Translator;
-import javassist.expr.*;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
 public class BoxingProfilerTranslator implements Translator {
   private ArrayList<CtMethod> autoboxingMethods = new ArrayList<CtMethod>();
@@ -80,13 +82,13 @@ public class BoxingProfilerTranslator implements Translator {
   }
 
   void makeBoxingProfiler(CtClass ctClass) throws NotFoundException, CannotCompileException {
-    for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
-      ctMethod.instrument(new ExprEditor() {
+    for (CtBehavior ctBehavior : ctClass.getDeclaredBehaviors()) {
+      ctBehavior.instrument(new ExprEditor() {
         public void edit(MethodCall expr) {
           try {
             CtMethod calledMethod = expr.getMethod();
             
-            String key = ctMethod.getLongName() + " "
+            String key = ctBehavior.getLongName() + " "
                + calledMethod.getDeclaringClass().getName();
             
             if (unboxingMethods.contains(calledMethod)) {
