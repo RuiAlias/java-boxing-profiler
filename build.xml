@@ -18,11 +18,13 @@
   <property name="samples.classes.dir" location="${build.dir}/${samples}" />
   <property name="test.classes.dir" location="${build.dir}/${test}" />
 
-  <property name="main.class" value="ist.meic.ap.BoxingProfiler" />
-  <property name="jar.name" value="boxingProfiler.jar" />
-  <property name="jar.name.extended" value="boxingProfilerExtended.jar" />
-  <property name="dist.own.jar" location="${dist.dir}/${jar.name}" />
-  <property name="dist.own.jar.extended" location="${dist.dir}/${jar.name.extended}" />
+  <property name="default.class" value="ist.meic.ap.BoxingProfiler" />
+  <property name="extended.class" value="ist.meic.ap.BoxingProfilerExtended" />
+
+  <property name="default.jar.name" value="boxingProfiler.jar" />
+  <property name="extended.jar.name" value="boxingProfilerExtended.jar" />
+  <property name="dist.default.jar" location="${dist.dir}/${default.jar.name}" />
+  <property name="dist.extended.jar" location="${dist.dir}/${extended.jar.name}" />
 
   <property name="release.zip" value="project.zip" />
   <property name="zip.prefix.dir" value="g05" />
@@ -72,31 +74,33 @@
     </javac>
   </target>
 
-  <target name="jar" depends="init-jar, compile-main">
-    <jar destfile="${dist.own.jar}" basedir="${main.classes.dir}">
+  <target name="jar-default" depends="init-jar, compile-main">
+    <jar destfile="${dist.default.jar}" basedir="${main.classes.dir}">
     	<zipfileset src="${lib.dir}/javassist.jar" />
       <manifest>
-        <attribute name="Main-Class" value="${main.class}" />
+        <attribute name="Main-Class" value="${default.class}" />
       </manifest>
     </jar>
   </target>
 	
+	<target name="jar" depends="jar-default" />
+
 	<target name="jar-extended" depends="init-jar, compile-main">
-	  <jar destfile="${dist.own.jar.extended}" basedir="${main.classes.dir}">
+	  <jar destfile="${dist.extended.jar}" basedir="${main.classes.dir}">
 	    <zipfileset src="${lib.dir}/javassist.jar" />
 	    <manifest>
-	      <attribute name="Main-Class" value="ist.meic.ap.BoxingProfilerExtended" />
+	      <attribute name="Main-Class" value="${extended.class}" />
 	    </manifest>
 	  </jar>
-		<copy file="${dist.own.jar.extended}" todir="." />
+		<copy file="${dist.extended.jar}" todir="." />
 	</target>
 
 
   <!-- =================================================================== -->
   <!-- Release                                                             -->
   <!-- =================================================================== -->
-  <target name="root-jar" depends="jar">
-    <copy file="${dist.own.jar}" todir="." />
+  <target name="root-jar" depends="jar-default">
+    <copy file="${dist.default.jar}" todir="." />
   </target>
 
   <target name="release">
@@ -125,7 +129,7 @@
 
   <target name="jar-runnable-samples" depends="jar, compile-samples">
     <jar destfile="${runnable.samples.jar}" filesetmanifest="merge">
-      <zipfileset src="${dist.own.jar}" />
+      <zipfileset src="${dist.default.jar}" />
       <fileset dir="${samples.classes.dir}" />
     </jar>
   </target>
@@ -185,15 +189,15 @@
   </target>
 
   <target name="clean-jar">
-    <delete file="${dist.own.jar}" />
+    <delete file="${dist.default.jar}" />
   </target>
 
 
   <target name="init-release" />
 
   <target name="clean-release">
-    <delete file="${jar.name}" />
-  	<delete file="${jar.name.extended}" />
+    <delete file="${default.jar.name}" />
+  	<delete file="${extended.jar.name}" />
     <delete file="${release.zip}" />
   </target>
 
