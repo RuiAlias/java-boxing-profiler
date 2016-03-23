@@ -14,16 +14,11 @@ public class BoxingProfilerTranslator implements Translator {
   private ArrayList<CtMethod> autoboxingMethods = new ArrayList<CtMethod>();
   private ArrayList<CtMethod> unboxingMethods = new ArrayList<CtMethod>();
   
-  protected String firstHalfTemplate =  "{" +
-          //"  long start = System.currentTimeMillis();"+
-          "  ist.meic.ap.ProfilingResults.add(\"";
-  
-  protected String secondHalfTemplate = " %s\");" +
-          "  $_ = $proceed($$);" +
-          //"  long end = System.currentTimeMillis();"+
-  	      //"  ist.meic.ap.ProfilingResults.addTime(end-start);" +
-          "}";
-  
+  protected String template = "{" +
+    "  ist.meic.ap.ProfilingResults.add(\"%s %s\");" +
+    "  $_ = $proceed($$);" +
+    "}";
+
   public void start(ClassPool pool)
       throws NotFoundException, CannotCompileException {
 	  
@@ -97,12 +92,10 @@ public class BoxingProfilerTranslator implements Translator {
             String key = ctMethod.getLongName() + " "
                + calledMethod.getDeclaringClass().getName();
             
-            final String template = firstHalfTemplate + key + secondHalfTemplate;
-            
             if (unboxingMethods.contains(calledMethod)) {
               try {
             	  
-            	  expr.replace(String.format(template, "unboxed"));
+            	  expr.replace(String.format(template, key, "unboxed"));
               } catch (CannotCompileException e) {
                 e.printStackTrace();
               }
@@ -111,7 +104,7 @@ public class BoxingProfilerTranslator implements Translator {
             if (autoboxingMethods.contains(calledMethod)) {
               try {
             	  
-            	  expr.replace(String.format(template, "boxed"));
+            	  expr.replace(String.format(template, key, "boxed"));
               } catch (CannotCompileException e) {
                 e.printStackTrace();
               }
