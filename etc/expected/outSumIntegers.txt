@@ -1,0 +1,6 @@
+SumIntegers.main(java.lang.String[]) boxed 1 java.lang.Double
+SumIntegers.main(java.lang.String[]) boxed 1 java.lang.Integer
+SumIntegers.printSum(java.lang.Double) unboxed 1 java.lang.Double
+SumIntegers.sumOfIntegerUptoN(java.lang.Integer) boxed 100001 java.lang.Double
+SumIntegers.sumOfIntegerUptoN(java.lang.Integer) unboxed 100001 java.lang.Double
+SumIntegers.sumOfIntegerUptoN(java.lang.Integer) unboxed 100001 java.lang.Integer
