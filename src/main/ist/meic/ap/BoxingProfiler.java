@@ -23,7 +23,6 @@ public class BoxingProfiler {
       classLoader.run(args[0], restArgs);
 
       ProfilingResults.printSortedResults();
-      //System.out.println("Time Spent (Un)Boxing -> "+ProfilingResultsExtended.getTotalTime());
     }
   }
 }
