@@ -1,6 +1,9 @@
 package ist.meic.ap;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -13,66 +16,36 @@ import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
 public class BoxingProfilerTranslator implements Translator {
-  private ArrayList<CtMethod> autoboxingMethods = new ArrayList<CtMethod>();
-  private ArrayList<CtMethod> unboxingMethods = new ArrayList<CtMethod>();
-  
-  protected String template = "{" +
-    "  ist.meic.ap.ProfilingResults.add(\"%s %s\");" +
-    "  $_ = $proceed($$);" +
-    "}";
+  private static final Set<String> autoboxingMethods =
+      Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+          "java.lang.Integer.valueOf(int)",
+          "java.lang.Long.valueOf(long)",
+          "java.lang.Double.valueOf(double)",
+          "java.lang.Float.valueOf(float)",
+          "java.lang.Short.valueOf(short)",
+          "java.lang.Boolean.valueOf(boolean)",
+          "java.lang.Byte.valueOf(byte)",
+          "java.lang.Character.valueOf(char)")));
+
+  private static final Set<String> unboxingMethods =
+      Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+          "java.lang.Integer.intValue()",
+          "java.lang.Long.longValue()",
+          "java.lang.Double.doubleValue()",
+          "java.lang.Float.floatValue()",
+          "java.lang.Short.shortValue()",
+          "java.lang.Boolean.booleanValue()",
+          "java.lang.Byte.byteValue()",
+          "java.lang.Character.charValue()")));
+
+  protected String template =
+      "{" +
+      "  ist.meic.ap.ProfilingResults.add(\"%s %s\");" +
+      "  $_ = $proceed($$);" +
+      "}";
 
   public void start(ClassPool pool)
-      throws NotFoundException, CannotCompileException {
-	  
-    CtClass compileClass = pool.get("java.lang.Integer");
-    CtMethod ValueCm = compileClass.getMethod("intValue", "()I");
-    CtMethod ValueOfCm = compileClass.getMethod("valueOf", "(I)Ljava/lang/Integer;");
-    unboxingMethods.add(ValueCm);
-    autoboxingMethods.add(ValueOfCm);
-    
-    compileClass = pool.get("java.lang.Long");
-    ValueCm = compileClass.getMethod("longValue", "()J");
-    ValueOfCm = compileClass.getMethod("valueOf", "(J)Ljava/lang/Long;");
-    unboxingMethods.add(ValueCm);
-    autoboxingMethods.add(ValueOfCm);
-    
-    compileClass = pool.get("java.lang.Double");
-    ValueCm = compileClass.getMethod("doubleValue", "()D");
-    ValueOfCm = compileClass.getMethod("valueOf", "(D)Ljava/lang/Double;");
-    unboxingMethods.add(ValueCm);
-    autoboxingMethods.add(ValueOfCm);
-    
-    compileClass = pool.get("java.lang.Float");
-    ValueCm = compileClass.getMethod("floatValue", "()F");
-    ValueOfCm = compileClass.getMethod("valueOf", "(F)Ljava/lang/Float;");
-    unboxingMethods.add(ValueCm);
-    autoboxingMethods.add(ValueOfCm);
-    
-    compileClass = pool.get("java.lang.Short");
-    ValueCm = compileClass.getMethod("shortValue", "()S");
-    ValueOfCm = compileClass.getMethod("valueOf", "(S)Ljava/lang/Short;");
-    unboxingMethods.add(ValueCm);
-    autoboxingMethods.add(ValueOfCm);
-    
-    compileClass = pool.get("java.lang.Boolean");
-    ValueCm = compileClass.getMethod("booleanValue", "()Z");
-    ValueOfCm = compileClass.getMethod("valueOf", "(Z)Ljava/lang/Boolean;");
-    unboxingMethods.add(ValueCm);
-    autoboxingMethods.add(ValueOfCm);
-    
-    compileClass = pool.get("java.lang.Byte");
-    ValueCm = compileClass.getMethod("byteValue", "()B");
-    ValueOfCm = compileClass.getMethod("valueOf", "(B)Ljava/lang/Byte;");
-    unboxingMethods.add(ValueCm);
-    autoboxingMethods.add(ValueOfCm);
-    
-    compileClass = pool.get("java.lang.Character");
-    ValueCm = compileClass.getMethod("charValue", "()C");
-    ValueOfCm = compileClass.getMethod("valueOf", "(C)Ljava/lang/Character;");
-    unboxingMethods.add(ValueCm);
-    autoboxingMethods.add(ValueOfCm);
-    
-  }
+      throws NotFoundException, CannotCompileException {}
 
   public void onLoad(ClassPool pool, String className)
       throws NotFoundException, CannotCompileException {
@@ -81,35 +54,29 @@ public class BoxingProfilerTranslator implements Translator {
     makeBoxingProfiler(ctClass);
   }
 
-  void makeBoxingProfiler(CtClass ctClass) throws NotFoundException, CannotCompileException {
+  void makeBoxingProfiler(CtClass ctClass)
+      throws NotFoundException, CannotCompileException {
     for (CtBehavior ctBehavior : ctClass.getDeclaredBehaviors()) {
       ctBehavior.instrument(new ExprEditor() {
         public void edit(MethodCall expr) {
           try {
             CtMethod calledMethod = expr.getMethod();
-            
-            String key = ctBehavior.getLongName() + " "
-               + calledMethod.getDeclaringClass().getName();
-            
-            if (unboxingMethods.contains(calledMethod)) {
-              try {
-            	  
-            	  expr.replace(String.format(template, key, "unboxed"));
-              } catch (CannotCompileException e) {
-                e.printStackTrace();
-              }
-            }
 
-            if (autoboxingMethods.contains(calledMethod)) {
-              try {
-            	  
-            	  expr.replace(String.format(template, key, "boxed"));
-              } catch (CannotCompileException e) {
-                e.printStackTrace();
+            String key = ctBehavior.getLongName() + " "
+                + calledMethod.getDeclaringClass().getName();
+
+            try {
+              if (unboxingMethods.contains(calledMethod.getLongName())) {
+                expr.replace(String.format(template, key, "unboxed"));
+              } else if (autoboxingMethods
+                  .contains(calledMethod.getLongName())) {
+                expr.replace(String.format(template, key, "boxed"));
               }
+            } catch (CannotCompileException e) {
+              e.printStackTrace();
             }
-          } catch (javassist.NotFoundException e) {
-        	  e.printStackTrace();
+          } catch (NotFoundException e) {
+            e.printStackTrace();
           }
         }
       });
