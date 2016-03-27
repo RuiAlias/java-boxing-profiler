@@ -1,4 +1,4 @@
-package ist.meic.ap;
+package ist.meic.pa;
 
 public class ProfilingResultsExtended extends ProfilingResults {
 	static long totalTime = 0;

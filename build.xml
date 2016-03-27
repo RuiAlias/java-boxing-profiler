@@ -15,8 +15,8 @@
   <property name="main.classes.dir" location="${build.dir}/${main}" />
   <property name="samples.classes.dir" location="${build.dir}/${samples}" />
 
-  <property name="default.class" value="ist.meic.ap.BoxingProfiler" />
-  <property name="extended.class" value="ist.meic.ap.BoxingProfilerExtended" />
+  <property name="default.class" value="ist.meic.pa.BoxingProfiler" />
+  <property name="extended.class" value="ist.meic.pa.BoxingProfilerExtended" />
 
   <property name="default.jar.name" value="boxingProfiler.jar" />
   <property name="extended.jar.name" value="boxingProfilerExtended.jar" />

@@ -1,4 +1,4 @@
-package ist.meic.ap;
+package ist.meic.pa;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -15,7 +15,7 @@ public class BoxingProfiler {
       Translator translator = new BoxingProfilerTranslator();
       ClassPool pool = ClassPool.getDefault();
       Loader classLoader = new Loader();
-      classLoader.delegateLoadingOf("ist.meic.ap.");
+      classLoader.delegateLoadingOf("ist.meic.pa.");
       classLoader.addTranslator(pool, translator);
 
       String[] restArgs = new String[args.length - 1];

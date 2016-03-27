@@ -1,4 +1,4 @@
-package ist.meic.ap;
+package ist.meic.pa;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,7 +40,7 @@ public class BoxingProfilerTranslator implements Translator {
 
   protected String template =
       "{" +
-      "  ist.meic.ap.ProfilingResults.add(\"%s %s\");" +
+      "  ist.meic.pa.ProfilingResults.add(\"%s %s\");" +
       "  $_ = $proceed($$);" +
       "}";
 

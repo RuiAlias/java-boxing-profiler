@@ -1,4 +1,4 @@
-package ist.meic.ap;
+package ist.meic.pa;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
