@@ -8,23 +8,24 @@
 
   <property name="main" value="main" />
   <property name="samples" value="etc" />
-  <property name="test" value="test" />
 
   <property name="main.src.dir" location="${src.dir}/${main}" />
   <property name="samples.src.dir" location="${samples}" />
-  <property name="test.src.dir" location="${src.dir}/${test}" />
 
   <property name="main.classes.dir" location="${build.dir}/${main}" />
   <property name="samples.classes.dir" location="${build.dir}/${samples}" />
-  <property name="test.classes.dir" location="${build.dir}/${test}" />
 
   <property name="default.class" value="ist.meic.ap.BoxingProfiler" />
   <property name="extended.class" value="ist.meic.ap.BoxingProfilerExtended" />
 
   <property name="default.jar.name" value="boxingProfiler.jar" />
   <property name="extended.jar.name" value="boxingProfilerExtended.jar" />
-  <property name="dist.default.jar" location="${dist.dir}/${default.jar.name}" />
-  <property name="dist.extended.jar" location="${dist.dir}/${extended.jar.name}" />
+  <property name="dist.default.jar"
+            location="${dist.dir}/${default.jar.name}"
+  />
+  <property name="dist.extended.jar"
+            location="${dist.dir}/${extended.jar.name}"
+  />
 
   <property name="release.zip" value="project.zip" />
   <property name="zip.prefix.dir" value="g05" />
@@ -35,32 +36,11 @@
   <property name="extended.samples.jar"
             location="${dist.dir}/extended-samples.jar" />
 
-  <property name="test.reports.dir" location="test-output" />
-
 
   <path id="classpath">
     <pathelement location="${lib.dir}/javassist.jar" />
     <pathelement location="${main.classes.dir}" />
   </path>
-
-  <path id="test.compile.classpath">
-    <path refid="classpath" />
-    <pathelement location="${lib.dir}/testng.jar" />
-  </path>
-
-  <path id="test.classpath">
-    <path refid="test.compile.classpath" />
-    <pathelement location="${lib.dir}/jcommander.jar" />
-    <pathelement location="${test.classes.dir}" />
-  </path>
-
-
-  <!-- =================================================================== -->
-  <!-- Additional tasks                                                     -->
-  <!-- =================================================================== -->
-  <taskdef name="testng"
-           classpathref="test.classpath"
-           classname="org.testng.TestNGAntTask" />
 
 
   <!-- =================================================================== -->
@@ -111,7 +91,8 @@
       <zipfileset dir="." includes="src/**/*" prefix="${zip.prefix.dir}" />
       <zipfileset dir="."
                   includes="${samples}/**/*"
-                  prefix="${zip.prefix.dir}" />
+                  prefix="${zip.prefix.dir}"
+      />
       <zipfileset dir="." includes="build.xml" prefix="${zip.prefix.dir}" />
       <zipfileset dir="." includes="${slides.pdf}" prefix="${zip.prefix.dir}" />
     </zip>
@@ -159,7 +140,8 @@
   </target>
   
   <target name="run-extended"
-          depends="jar-extended-samples, run-extended-args, run-extended-noargs" />
+          depends="jar-extended-samples, run-extended-args, run-extended-noargs"
+  />
   
   <target name="run-extended-args" if="args">
     <java jar="${extended.samples.jar}" fork="true">
@@ -171,29 +153,12 @@
     <java jar="${extended.samples.jar}" fork="true" />
   </target>
 
-  <!-- =================================================================== -->
-  <!-- Tests: Compile and run                                              -->
-  <!-- =================================================================== -->
-  <target name="test-compile" depends="init-tests, compile">
-    <javac srcdir="${test.src.dir}"
-           destdir="${test.classes.dir}"
-           includeantruntime="false">
-      <classpath refid="test.compile.classpath" />
-    </javac>
-  </target>
-
-  <target name="test" depends="test-compile">
-    <testng classpathref="test.classpath" outputDir="${test.reports.dir}">
-      <classfileset dir="${test.classes.dir}" includes="**/*.class" />
-    </testng>
-  </target>
-
 
   <!-- =================================================================== -->
   <!-- Build preparation and cleaning                                      -->
   <!-- =================================================================== -->
   <target name="clean"
-          depends="clean-main,clean-tests,clean-samples,clean-release,clean-jar" >
+          depends="clean-main, clean-samples, clean-release, clean-jar">
     <delete dir="${build.dir}" />
     <delete dir="${dist.dir}" />
   </target>
@@ -233,16 +198,5 @@
   <target name="clean-samples">
     <delete file="${runnable.samples.jar}" />
     <delete dir="${samples.classes.dir}" />
-  </target>
-
-
-  <target name="init-tests">
-    <mkdir dir="${test.classes.dir}" />
-    <mkdir dir="${test.reports.dir}" />
-  </target>
-
-  <target name="clean-tests">
-    <delete dir="${test.reports.dir}" />
-    <delete dir="${test.classes.dir}" />
   </target>
 </project>

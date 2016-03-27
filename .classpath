@@ -3,8 +3,6 @@
 	<classpathentry kind="src" path="etc"/>
 	<classpathentry kind="src" path="src/main"/>
 	<classpathentry kind="lib" path="lib/javassist.jar"/>
-	<classpathentry kind="lib" path="lib/jcommander.jar"/>
-	<classpathentry kind="lib" path="lib/testng.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
