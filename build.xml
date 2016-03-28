@@ -20,9 +20,7 @@
 
   <property name="default.jar.name" value="boxingProfiler.jar" />
   <property name="extended.jar.name" value="boxingProfilerExtended.jar" />
-  <property name="dist.default.jar"
-            location="${dist.dir}/${default.jar.name}"
-  />
+  <property name="dist.both.jar" location="${dist.dir}/${default.jar.name}" />
   <property name="dist.extended.jar"
             location="${dist.dir}/${extended.jar.name}"
   />
@@ -56,8 +54,8 @@
     </javac>
   </target>
 
-  <target name="jar-default" depends="init-jar, compile-main">
-    <jar destfile="${dist.default.jar}" basedir="${main.classes.dir}">
+  <target name="jar-both" depends="init-jar, compile-main">
+    <jar destfile="${dist.both.jar}" basedir="${main.classes.dir}">
     	<zipfileset src="${lib.dir}/javassist.jar" />
       <manifest>
         <attribute name="Main-Class" value="${default.class}" />
@@ -65,7 +63,7 @@
     </jar>
   </target>
 	
-	<target name="jar" depends="jar-default" />
+	<target name="jar" depends="jar-both" />
 
 	<target name="jar-extended" depends="init-jar, compile-main">
 	  <jar destfile="${dist.extended.jar}" basedir="${main.classes.dir}">
@@ -80,9 +78,8 @@
   <!-- =================================================================== -->
   <!-- Release                                                             -->
   <!-- =================================================================== -->
-  <target name="root-jar" depends="jar-default, jar-extended">
-    <copy file="${dist.default.jar}" todir="." />
-    <copy file="${dist.extended.jar}" todir="." />
+  <target name="root-jar" depends="jar-both">
+    <copy file="${dist.both.jar}" todir="." />
   </target>
 
   <target name="release">
@@ -110,9 +107,9 @@
     </javac>
   </target>
 
-  <target name="jar-default-samples" depends="jar-default, compile-samples">
+  <target name="jar-default-samples" depends="jar-both, compile-samples">
     <jar destfile="${default.samples.jar}" filesetmanifest="merge">
-      <zipfileset src="${dist.default.jar}" />
+      <zipfileset src="${dist.both.jar}" />
       <fileset dir="${samples.classes.dir}" />
     </jar>
   </target>
@@ -178,7 +175,7 @@
   </target>
 
   <target name="clean-jar">
-    <delete file="${dist.default.jar}" />
+    <delete file="${dist.both.jar}" />
   </target>
 
 
