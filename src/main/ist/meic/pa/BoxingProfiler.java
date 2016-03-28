@@ -20,7 +20,11 @@ public class BoxingProfiler {
 
       String[] restArgs = new String[args.length - 1];
       System.arraycopy(args, 1, restArgs, 0, restArgs.length);
-      classLoader.run(args[0], restArgs);
+      try {
+        classLoader.run(args[0], restArgs);
+      } catch (ClassNotFoundException cnfe) {
+        System.out.println("Error: Class " + args[0] + " was not found");
+      }
 
       ProfilingResults.printSortedResults();
     }
