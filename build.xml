@@ -65,9 +65,9 @@
 	
 	<target name="jar" depends="jar-both" />
 
-	<target name="jar-extended" depends="init-jar, compile-main">
-	  <jar destfile="${dist.extended.jar}" basedir="${main.classes.dir}">
-	    <zipfileset src="${lib.dir}/javassist.jar" />
+	<target name="jar-extended" depends="jar-both">
+	  <jar destfile="${dist.extended.jar}">
+	    <zipfileset src="${dist.both.jar}" />
 	    <manifest>
 	      <attribute name="Main-Class" value="${extended.class}" />
 	    </manifest>
