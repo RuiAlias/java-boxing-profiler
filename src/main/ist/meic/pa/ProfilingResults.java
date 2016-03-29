@@ -4,6 +4,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map;
 
+/**
+ * Auxiliar class to store profiling results;
+ * Prints the results in the requested order.
+ */
 public class ProfilingResults {
   static SortedMap<String, Integer> sortedResults = new TreeMap<String, Integer>();
 

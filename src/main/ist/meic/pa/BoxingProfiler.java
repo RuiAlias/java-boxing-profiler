@@ -6,6 +6,11 @@ import javassist.Loader;
 import javassist.NotFoundException;
 import javassist.Translator;
 
+/**
+ * Program's entry point;
+ * Initializes custom class loader and parses command line arguments;
+ * Prints profiling results.
+ */
 public class BoxingProfiler {
   public static void main(String[] args)
       throws NotFoundException, CannotCompileException, Throwable {

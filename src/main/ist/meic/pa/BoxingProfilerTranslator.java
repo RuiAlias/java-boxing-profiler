@@ -15,6 +15,11 @@ import javassist.Translator;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
+/**
+ * Sets up boxing and unboxing methods;
+ * For every Class loaded, searches for (un)boxing method calls and injects
+ * profiling code in it.
+ */
 public class BoxingProfilerTranslator implements Translator {
   private static final Set<String> autoboxingMethods =
       Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
