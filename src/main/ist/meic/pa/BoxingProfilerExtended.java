@@ -32,8 +32,7 @@ public class BoxingProfilerExtended {
       }
 
       ProfilingResults.printSortedResults();
-      System.out.println("Time Spent (Un)Boxing -> "
-          + ProfilingResultsExtended.getTotalTime() + " milliseconds.");
+      ProfilingResultsExtended.printBoxingTime();
     }
   }
 }
